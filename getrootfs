@@ -1,0 +1,3 @@
+#!/bin/bash
+/bin/rm -rf gentoo-build-container-rootfs.tar
+docker export gentoo-build-container -o gentoo-build-container-rootfs.tar
