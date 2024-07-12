@@ -24,11 +24,11 @@ set +x
 echo " "
 echo " "
 set -x
-# docker save $CONTAINER -o $CONTAINER.tar
-# set +x
-# echo " "
-# echo " "
-# set -x
+docker save $CONTAINER -o "$CONTAINER.$( date + '%y%m%d_%H.%M.%S' ).tar"
+set +x
+echo " "
+echo " "
+set -x
 docker container ls -a
 set +x
 echo "Note the container was run without --rm, you may want to: docker rm $CONTAINER"
