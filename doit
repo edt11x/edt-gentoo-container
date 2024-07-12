@@ -24,7 +24,7 @@ set +x
 echo " "
 echo " "
 set -x
-docker save $CONTAINER -o "$CONTAINER.$( date + '%y%m%d_%H.%M.%S' ).tar"
+docker save $CONTAINER -o "$CONTAINER.$( date +'%y%m%d_%H.%M.%S' ).tar"
 set +x
 echo " "
 echo " "
