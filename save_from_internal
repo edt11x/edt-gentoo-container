@@ -1,0 +1,7 @@
+#!/bin/bash
+set -x
+export CONTAINER=gentoo-build-container
+export THIS_DATE=$( date +'%y%m%d' )
+cd /
+mkdir -p /home/user/files/backups/Vertiv
+sudo tar --exclude='/proc' --exclude='/sys' --exclude='/tmp' --exclude='/run' --exclude='/dev' --exclude='/home' --exclude='/var/log' --exclude='/boot' -czpf /home/user/files/backups/Vertiv/$CONTAINER-rootfs.$THIS_DATE.tar.gz /

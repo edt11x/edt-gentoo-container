@@ -1,0 +1,12 @@
+#!/bin/bash
+set -e
+export CONTAINER=gentoo-build-container
+export THIS_DATE=$( date +'%y%m%d' )
+set -x
+docker save $CONTAINER -o "$CONTAINER.$THIS_DATE.tar"
+docker commit $CONTAINER  "$CONTAINER:$THIS_DATE"
+set +x
+echo " "
+echo " "
+echo "Done."
+exit 0

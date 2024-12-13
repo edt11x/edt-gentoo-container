@@ -1,0 +1,15 @@
+#!/bin/bash
+echo "This Docker container is a good Gentoo build environment, both for x86 and ARM64 (aarch64)"
+set -x
+export CONTAINER=gentoo-build-container
+export THIS_DATE=$( date +'%y%m%d' )
+# make sure that this user is in the docker group
+grep -q '^docker:.*'"$USER" /etc/group || sudo usermod -aG docker "$USER"
+if [ "$(id -gn)" != "docker" ]
+then
+    # re-exec the shell script so we are running in the docker group
+    exec sudo sg docker "$0 $*"
+fi
+docker run -d --sysctl net.ipv6.conf.all.disable_ipv6=1 --mount type=bind,source="$HOME",target=/home/user -it -u "0:0" --init --platform linux/arm64 --name $CONTAINER-$THIS_DATE $CONTAINER:latest
+docker ps -a
+exit 0
