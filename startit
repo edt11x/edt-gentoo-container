@@ -1,8 +1,8 @@
 #!/bin/bash
 echo "This Docker container is a good Gentoo build environment, both for x86 and ARM64 (aarch64)"
 set -x
-export CONTAINER=gentoo-build-container
-export THIS_DATE=$( date +'%y%m%d' )
+export CONTAINER_NAME=gentoo-build-container
+export IMAGE_NAME="gentoo-build-container:241226"
 # make sure that this user is in the docker group
 grep -q '^docker:.*'"$USER" /etc/group || sudo usermod -aG docker "$USER"
 if [ "$(id -gn)" != "docker" ]
@@ -10,6 +10,39 @@ then
     # re-exec the shell script so we are running in the docker group
     exec sudo sg docker "$0 $*"
 fi
-docker run -d --sysctl net.ipv6.conf.all.disable_ipv6=1 --mount type=bind,source="$HOME",target=/home/user -it -u "0:0" --init --platform linux/arm64 --name $CONTAINER-$THIS_DATE $CONTAINER:latest
+#    -v /home/dev/files/work/Vertiv/edt-gentoo-rootfs/usr:/usr \
+#    -v /home/dev/files/work/Vertiv/edt-gentoo-rootfs/var:/var \
+#    -v /home/dev/files/work/Vertiv/edt-gentoo-rootfs/etc:/etc \
+#    -v /home/dev/files/work/Vertiv/edt-gentoo-rootfs/opt:/opt \
+# docker run \
+#     --sysctl net.ipv6.conf.all.disable_ipv6=1 \
+#     --mount type=bind,source="$HOME",target=/home/user \
+#     -it -u "0:0" --init --platform linux/arm64 \
+#     --name $CONTAINER_NAME $IMAGE_NAME
+# Check to see if the container is already running
+if [ "$( docker ps -q -f name=$CONTAINER_NAME )" ]
+then
+    echo "Container $CONTAINER_NAME is already running"
+else
+    # see if exists and is not running
+    if [ "$( docker ps -aq -f status=exited -f name=$CONTAINER_NAME )" ]
+    then
+        echo "Starting existing container $CONTAINER_NAME"
+        set -x
+        docker start $CONTAINER_NAME
+        set +x
+    else
+        echo "Creating and starting new container $CONTAINER_NAME"
+        set -x
+        docker run \
+            --sysctl net.ipv6.conf.all.disable_ipv6=1 \
+            --mount type=bind,source="$HOME",target=/home/user \
+            -it -u "0:0" --init --platform linux/arm64 \
+            --name $CONTAINER_NAME $IMAGE_NAME
+        set +x
+    fi
+fi
 docker ps -a
+docker exec --user $USER -it $CONTAINER_NAME /bin/bash
+echo "Done."
 exit 0
