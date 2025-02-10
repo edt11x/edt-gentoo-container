@@ -1,8 +1,8 @@
 #!/bin/bash
 echo "This Docker container is a good Gentoo build environment, both for x86 and ARM64 (aarch64)"
 set -x
-export CONTAINER_NAME=gentoo-build-container
-export IMAGE_NAME="gentoo-build-container:241226"
+export CONTAINER_NAME="gentoo-build-container"
+export IMAGE_NAME="gentoo-build-container"
 # make sure that this user is in the docker group
 grep -q '^docker:.*'"$USER" /etc/group || sudo usermod -aG docker "$USER"
 if [ "$(id -gn)" != "docker" ]
@@ -35,6 +35,7 @@ else
         echo "Creating and starting new container $CONTAINER_NAME"
         set -x
         docker run \
+            --memory="4g" --memory-swap="4g" \
             --sysctl net.ipv6.conf.all.disable_ipv6=1 \
             --mount type=bind,source="$HOME",target=/home/user \
             -it -u "0:0" --init --platform linux/arm64 \
